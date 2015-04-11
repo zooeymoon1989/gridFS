@@ -1,0 +1,41 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: A
+ * Date: 2015/4/11
+ * Time: 0:13
+ */
+class DBConnection{
+    //常量主机，端口，文档
+    const HOST = 'localhost';
+    const PORT = 27017;
+    const DBNAME = 'myfiles';
+    private  static $instance;
+    public $connection;
+    public $database;
+    //初始化DBconnection类
+    private function __construct(){
+        $connectionString=sprintf('mongodb://%s:%d',DBConnection::HOST,DBConnection::PORT);
+        try{
+            $this->connection=new MongoClient($connectionString);
+            $this->database=$this->connection->selectDB(DBConnection::DBNAME);
+        }catch (MongoConnectionException $e){
+            die($e->getMessage());
+        }
+    }
+    //使用singleton模式确定只能实例化一个变量
+    public static function instantiate(){
+         if(!isset(self::$instance)){
+             $class=__CLASS__;
+             self::$instance=new $class;
+         }
+
+        return self::$instance;
+    }
+
+
+    //返回查询的集合
+    public function getCollection($name){
+        return $this->database->selectCollection($name);
+    }
+}
