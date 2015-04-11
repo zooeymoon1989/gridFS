@@ -1,0 +1,16 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: A
+ * Date: 2015/4/11
+ * Time: 2:50
+ */
+$id=$_GET['id'];
+require_once "mongodb_conn.php";
+$mongo=DBConnection::instantiate();
+$gridFS=$mongo->database->getGridFS();
+$object=$gridFS->findOne(array('_id'=>new MongoId($id)));
+$file=$object->file['filename'];
+$gridFS->remove(array('filename'=>$file));
+$error = $mongo->database->lastError();
+header("location:list.php");
